@@ -1,0 +1,247 @@
+Zéro-Data par l'architecture
+Une classe de services numériques pour le traitement de données sensibles
+Classification : Externe  |  Version 4.0  |  Mars 2026
+
+Classification — Note de lecture
+Ce document est classifié
+Ce document est classifié Externe : il est conçu pour être lu par n'importe quel observateur, technique ou non. Cette classification n'est pas un statut de confidentialité — c'est un engagement de transparence. Par principe, tout ce que cet opérateur produit est public, à l'exception des seuls secrets techniques protégeant directement l'utilisateur final : certificats, clés, configurations d'accès sensibles. Ce qui est traditionnellement Interne dans une organisation classique est ici Externe par défaut.
+
+Historique des versions
+| Version | Date | Description |
+| 1.0 | Janvier 2026 | Version initiale |
+| 2.0 | Janvier 2026 | Refonte : anonymat by design, blob local, vérifiabilité mécanique |
+| 3.0 | Février 2026 | Réécriture théorique. Approche outil-agnostique. Renforcement des limites. Ajout gouvernance opérateur et TEET. |
+| 4.0 | Mai 2026 | Restructuration formelle : numérotation unifiée, résumé structuré, section 10 transformée en checklist, conclusion réécrite. |
+
+Résumé
+| Ce document décrit une classe d'architecture logicielle dans laquelle un opérateur traite des données sensibles sans jamais en prendre possession — et sans jamais connaître l'identité de ses utilisateurs. Nous appelons cette classe Zéro-Data par l'architecture.\n\nCette propriété est mécanique, pas contractuelle : elle est la conséquence directe de choix d'implémentation précis, vérifiables par quiconque peut lire du code et une configuration d'infrastructure. |
+Ce document est organisé en douze sections :
+Sections 1 à 3 : le problème, le principe fondateur, et la propriété centrale — l'utilisateur inconnu
+Section 4 : les six défis techniques fondamentaux qu'une implémentation doit résoudre
+Section 5 : la vérifiabilité directe et la télémétrie d'exécution exposée (TEET)
+Section 6 : la fermeture du gap d'attestation par TEE, attestation matérielle et contrôle physique
+Section 7 : pourquoi la centralisation est compatible avec ce modèle
+Section 8 : la gouvernance de l'opérateur comme condition nécessaire
+Section 9 : domaines d'application
+Section 10 : checklist des conditions nécessaires
+Section 11 : limites honnêtes du modèle
+Section 12 : conclusion
+Ce document est outil-agnostique : il décrit les défis techniques à résoudre et les propriétés à garantir, pas les solutions spécifiques qui les implémentent. Il n'invente aucune technologie nouvelle — sa contribution est la combinaison systématique de choix d'implémentation existants pour produire une propriété émergente : l'opérateur ne peut pas divulguer ce qu'il n'a jamais eu.
+1. Le problème que cette architecture résout
+Les services numériques qui traitent des données personnelles sensibles reproduisent tous le même schéma : l'utilisateur confie ses données à un opérateur, et cet opérateur s'engage à les protéger. Ce modèle crée structurellement un actif — la base de données — que des acteurs ont intérêt à exploiter, à attaquer, ou à divulguer sous contrainte.
+La réponse habituelle est défensive : chiffrement au repos, contrôles d'accès, audits de sécurité, certifications. Ces mesures réduisent le risque. Elles ne le suppriment pas, parce qu'elles présupposent l'existence de la donnée en clair quelque part dans le système — et donc l'existence d'une surface à attaquer.
+L'architecture décrite ici prend le problème à sa racine : si la donnée n'existe jamais en clair sur l'infrastructure de l'opérateur, et si l'utilisateur n'y est jamais identifié, il n'y a rien à protéger, rien à voler, rien à divulguer sous contrainte.
+Ce n'est pas une réduction du risque. C'est une suppression de la surface d'attaque — du contenu comme de l'identité.
+2. Le principe fondateur : dissocier possession et computation
+L'architecture repose sur une distinction que les systèmes traditionnels ne font pas. Posséder une donnée, c'est être en mesure de la lire, de la copier, de la transmettre — y compris sous contrainte. Calculer sur une donnée, c'est effectuer des opérations — analyses, transformations, visualisations — sans nécessairement en connaître le contenu de manière durable.
+Ces deux fonctions peuvent être séparées. L'utilisateur conserve la possession de ses données entre les sessions. L'infrastructure fournit la computation — elle reçoit les données pour une durée limitée et définie, les traite, et n'en conserve aucune trace.
+|  | Service traditionnel | Service décentralisé | Zéro-Data par l'architecture |
+| Possession des données | Opérateur | Distribuée (N nœuds) | Utilisateur uniquement |
+| Computation | Opérateur | Distribuée | Opérateur (éphémère) |
+| Identité de l'utilisateur | Connue de l'opérateur | Pseudonyme on-chain | Inconnue de l'opérateur |
+| Persistance post-session | Oui — base de données | Oui — registre permanent | Non — état initial restauré |
+| Divulgation possible sous contrainte | Oui | Partielle | Non — rien à divulguer |
+Ce principe a une conséquence immédiate sur la nature de la confiance requise. Dans un service traditionnel, l'utilisateur doit faire confiance à la compétence et à l'intégrité de l'opérateur pour protéger ses données. Dans cette architecture, cette confiance devient inutile — non pas parce que l'opérateur est plus digne de confiance, mais parce que la donnée ne lui est jamais confiée et l'utilisateur ne lui est jamais présenté.
+3. L'utilisateur inconnu — une propriété, pas une lacune
+La plupart des services qui se réclament de la confidentialité — messageries chiffrées, stockage end-to-end, gestionnaires de mots de passe — partagent une caractéristique commune : l'opérateur ne lit pas le contenu, mais il connaît l'identité de ses utilisateurs. Il sait qui a un compte, quand il se connecte, depuis où, avec quelle fréquence.
+Cette architecture va plus loin. L'utilisateur n'est pas identifié. Aucun compte n'est créé. L'opérateur ne crée aucun log d'IP, aucun identifiant de session, aucun identifiant pérenne. L'utilisateur arrive dans une infrastructure vide, y dépose temporairement ses données pour les traiter, et repart avec le résultat.
+La salle vide. Entre deux sessions, le serveur est dans l'état d'une salle de réunion vide : l'infrastructure existe, les ressources sont disponibles, mais personne n'y a laissé la moindre trace de sa présence.
+Cette propriété est qualitativement différente du chiffrement du contenu. Elle supprime la couche de métadonnées d'identité — la plus persistante et souvent la plus exploitable. La table ci-dessous compare ce que l'opérateur connaît, et ne connaît pas, de ses utilisateurs :
+| Ce que l'opérateur sait | Service classique (Proton, Signal…) | Zéro-Data par l'architecture |
+| Qui utilise le service | ✅ Oui (email, compte) | ❌ Non |
+| Quand l'utilisateur se connecte | ✅ Oui (logs de session) | ❌ Non |
+| Depuis où | ✅ Oui (IP loguée par l'opérateur) | ❌ Non (aucun log créé) |
+| Avec quelle fréquence | ✅ Oui | ❌ Non |
+| Le contenu des données | ❌ Non (chiffré) | ❌ Non (chiffré) |
+L'absence d'identité n'est pas une limite du système — c'est son design. Elle est la conséquence directe du modèle décrit à la section suivante : l'utilisateur apporte son propre fichier de données chiffré. Il n'a pas besoin de s'enregistrer pour que l'infrastructure traite ses données.
+4. Les défis techniques fondamentaux
+Cette section décrit les problèmes qu'une implémentation de ce modèle doit résoudre, indépendamment des solutions retenues. Chaque défi correspond à une propriété nécessaire : en retirer une dégrade les garanties de l'ensemble.
+4.1 Le blob — possession permanente côté utilisateur
+L'utilisateur conserve un fichier de données chiffré — son blob — sur son propre support : disque local, clé USB, espace personnel. Il en est seul détenteur. Ce fichier est chiffré par l'utilisateur avant tout transit vers l'infrastructure, avec une clé que l'opérateur ne détient jamais. La responsabilité du stockage du blob appartient à l'utilisateur — c'est un choix délibéré de design qui responsabilise le propriétaire de la donnée.
+Défi n° 1 : la dérivation de clé. Le mot de passe de l'utilisateur ne peut pas être utilisé directement comme clé cryptographique — il est trop court, trop prévisible, trop vulnérable à une attaque par force brute. Une fonction de dérivation de clé doit le transformer en secret cryptographique solide. Cette fonction doit être à mémoire intensive : elle force chaque tentative d'attaque à consommer des ressources importantes, rendant les attaques par dictionnaire ou par GPU prohibitivement coûteuses. Le choix des paramètres est une décision qui engage dans le temps.
+Défi n° 2 : le chiffrement authentifié. Le blob doit être chiffré avec un algorithme qui garantit simultanément la confidentialité (les données sont illisibles sans la clé) et l'intégrité (toute modification du blob est détectable à l'ouverture). Un algorithme qui chiffre sans authentifier expose l'utilisateur à des attaques par manipulation du fichier chiffré.
+Défi n° 3 : la gestion du nonce. Pour tout algorithme de chiffrement symétrique, réutiliser le même paramètre aléatoire (nonce ou vecteur d'initialisation) avec la même clé est catastrophique — cela annule la confidentialité. L'implémentation doit garantir qu'un nouveau nonce est généré aléatoirement à chaque opération de chiffrement, structurellement, sans dépendre de la vigilance du développeur.
+4.2 La computation éphémère en mémoire vive
+Lorsque l'utilisateur ouvre une session, ses données sont déchiffrées dans la mémoire vive du serveur — jamais sur disque. La computation s'y déroule. À la fermeture, le résultat est rechiffré, restitué à l'utilisateur, et la mémoire est effacée.
+| Phase | Disque serveur | RAM serveur |
+| Avant la session | Vide | Vide |
+| Ouverture | Inchangé | Déchiffrement du blob — clé fournie par l'utilisateur, non stockée |
+| Session active | Inchangé | Données déchiffrées — computation en cours |
+| Fermeture | Inchangé | Rechiffrement → restitution → effacement |
+| Après la session | Vide | Vide |
+Défi n° 4 : garantir que la mémoire ne migre jamais vers le disque. Les systèmes d'exploitation modernes peuvent déplacer des pages mémoire vers le disque par plusieurs mécanismes — et le swap n'est pas le seul.
+Le swap : pages mémoire déplacées sur disque pour libérer de la RAM. La désactivation doit intervenir à deux niveaux indépendants — système d'exploitation et processus applicatif.
+Le zswap et le zram : variantes de compression mémoire opérant en kernel, activées par défaut sur certaines distributions, à désactiver explicitement.
+Les core dumps et crash dumps : mécanismes de débogage qui écrivent l'intégralité de la mémoire d'un processus sur disque en cas de crash. Leur désactivation explicite est non optionnelle.
+L'hibernation : écrit l'intégralité de la RAM sur disque. À désactiver au niveau système.
+Défi n° 5 : l'effacement mémoire à la fermeture de session. Libérer de la mémoire n'est pas l'effacer. L'implémentation doit effacer explicitement (zeroing) les zones mémoire contenant des données déchiffrées et des matériaux cryptographiques avant de les libérer.
+4.3 L'absence de logs — contrainte mécanique, pas politique
+Un service qui chiffre le contenu mais conserve des métadonnées de connexion construit un profil comportemental de ses utilisateurs sans accéder au contenu. Pour un dossier médical, savoir qu'un utilisateur se connecte tous les soirs depuis une adresse hospitalière est une information sensible indépendamment du contenu.
+Cette architecture supprime les deux couches de métadonnées : aucun compte, aucun email, aucun identifiant pérenne n'est créé — et aucun log applicatif associable à une session individuelle n'est généré, non pas en les collectant puis en les effaçant, mais en ne les créant pas.
+Défi n° 6 : rendre l'absence de logs vérifiable. Une déclaration de politique est indiscernable d'un mensonge sans mécanisme de vérification. L'absence de logs doit être une propriété émergente de la configuration d'infrastructure publiée, vérifiable par quiconque peut lire cette configuration.
+Une donnée non créée ne peut pas être saisie.
+Les métriques d'exploitation nécessaires à la supervision de l'infrastructure (charge CPU, volume de trafic agrégé, santé des services) doivent être dissociées de toute donnée associable à une session ou un utilisateur individuel. Monitorer la machine ne doit pas impliquer surveiller l'utilisateur.
+4.4 L'exposition réseau — réduire la surface d'attaque directe
+Ce modèle favorise des architectures dans lesquelles l'infrastructure initie les connexions vers l'extérieur plutôt que de les recevoir — éliminant ainsi l'exposition directe de l'adresse IP de l'infrastructure. La communication entre nœuds internes doit être chiffrée de bout en bout, sans transiter par des tiers. Le trafic public et le trafic inter-nœuds doivent être isolés l'un de l'autre.
+5. La vérifiabilité directe et la télémétrie d'exécution
+5.1 Autorité vs preuve directe
+Un audit externe publié dit : « Nous avons vérifié, et c'est conforme. » C'est une affirmation d'autorité. L'utilisateur doit faire confiance à l'auditeur, à sa compétence, à son indépendance, et à la pertinence de son périmètre.
+Ce modèle repose sur un principe différent : tout ce que l'architecture garantit doit être directement vérifiable par l'utilisateur lui-même, sans délégation à une autorité. Le code est public. La configuration d'infrastructure est publique. Les résultats des pipelines de sécurité sont publics.
+Autorité : « Un tiers certifié a vérifié et atteste que c'est conforme. »
+Preuve directe : « Voici le code exact. Voici la configuration exacte. Voici les résultats automatisés des tests de sécurité. Lisez. »
+Un audit externe peut être un complément utile — il ne peut pas être la garantie principale dans un modèle de confiance minimale.
+| Ce que l'utilisateur peut vérifier | Comment |
+| Le blob n'est jamais stocké en clair sur le serveur | Code du module de gestion de session |
+| Le swap est désactivé | Configuration IaC publiée + sorties système publiées à chaque release |
+| La mémoire est verrouillée au niveau processus | Code du service d'authentification |
+| Aucun log utilisateur n'est créé | Configuration du reverse proxy dans l'IaC — absence de toute directive de logging associée à des IPs ou sessions |
+| La CI/CD est le seul chemin vers la production | Pipelines publics + historique des déploiements |
+| Les algorithmes cryptographiques utilisés | Code du module de chiffrement |
+5.2 La chaîne IaC → CI/CD comme mécanisme de preuve
+La vérifiabilité n'est pas une propriété statique — c'est une propriété de la chaîne de déploiement. Pour qu'une lecture du code soit une preuve de ce qui tourne en production, le code doit être le seul chemin vers la production. Cette exigence impose :
+L'Infrastructure as Code (IaC) publiée : l'intégralité de la configuration est décrite sous forme de code versionné et public. Toute modification est traçable.
+Le pipeline CI/CD comme unique chemin vers la production : aucun déploiement manuel n'est possible.
+Les analyses de sécurité automatisées : analyses statiques et dynamiques exécutées à chaque modification, résultats publiés — y compris les vulnérabilités détectées et non encore corrigées.
+Il faut cependant nommer honnêtement la limite centrale de cette approche. La chaîne IaC → CI/CD est une garantie organisationnelle, pas une garantie cryptographique. Un opérateur malveillant peut modifier la configuration de production sans toucher au dépôt source. La solution complète exige une attestation matérielle — décrite en section 6.
+5.3 La télémétrie d'exécution exposée en temps réel (TEET)
+La lecture du code et de la configuration est une vérification statique. Elle dit ce que le système devrait faire. Elle ne dit pas ce qu'il fait à l'instant où on lui soumet des données.
+La TEET (Télémétrie d'Exécution Exposée en Temps réel) expose publiquement des indicateurs agrégés d'infrastructure : charge processeur, occupation mémoire vive, espace swap alloué (attendu : zéro), nombre de sessions actives sans identifiant, latence des opérations. Ces métriques permettent à n'importe quel utilisateur de vérifier en continu la cohérence entre les promesses du code et le comportement observable de la machine.
+La TEET ne garantit pas l'absence de surveillance. Elle garantit que la cohérence avec les promesses est observable en continu, et que toute incohérence est détectable.
+Toute anomalie — un pic d'écriture disque inattendu, un espace swap non nul, une charge mémoire incohérente avec le nombre de sessions déclarées — devient détectable par n'importe quel observateur externe.
+| Niveau | Mécanisme | Ce qu'il vérifie | Ce qu'il ne prouve pas |
+| Statique — code | Code source publié | Ce que le système est conçu pour faire | Que c'est bien ce qui tourne |
+| Statique — configuration | IaC publiée | Comment le système est configuré | Que la config publiée est la config active |
+| Automatisé — CI/CD | Pipelines publics | Que seul le code vérifié atteint la production | Garantie organisationnelle, pas cryptographique |
+| Dynamique — TEET | Télémétrie en temps réel | Cohérence observable entre promesses et comportement | Absence de processus parallèles invisibles |
+| Cryptographique — attestation | TEE + attestation matérielle | Que le code qui tourne est identique au code publié | Les vecteurs en dessous du TEE (firmware, supply chain) |
+| Physique — contrôle on-prem | Maîtrise du matériel par l'organisation | Que nul tiers ne peut accéder à la machine à l'insu de l'organisation | Une compromission physique délibérée de l'organisation elle-même |
+6. Fermer le gap d'attestation — TEE, attestation matérielle et contrôle physique
+Toutes les garanties décrites jusqu'ici reposent, en dernière instance, sur la confiance que le code publié est bien le code qui s'exécute en production. C'est le gap d'attestation : aucune lecture du dépôt source, aucun pipeline CI/CD, aucune télémétrie ne peut prouver cryptographiquement cette correspondance par des moyens purement logiciels et organisationnels.
+Ce gap est adressable. Trois couches complémentaires, combinées, permettent de le fermer. Ces trois couches ne sont pas alternatives — elles sont nécessaires ensemble. Retirer l'une dégrade les garanties des deux autres.
+6.1 Le problème que ces couches résolvent
+Un opérateur qui déploie du code sur une machine contrôlée par un tiers ne peut pas prouver à ses utilisateurs que la machine exécute exactement ce que le dépôt public contient. Symétriquement, un opérateur qui contrôle son propre matériel mais n'a pas de mécanisme d'attestation ne peut pas prouver à ses utilisateurs que le code déployé correspond au code publié. La solution complète requiert les deux : contrôle physique et preuve cryptographique vérifiable à distance.
+6.2 Couche 1 — Les environnements d'exécution de confiance (TEE)
+Un environnement d'exécution de confiance est une région d'exécution isolée au niveau matériel, gérée directement par le processeur. Le code qui s'y exécute est protégé : le système d'exploitation, l'hyperviseur, et tout autre logiciel système ne peuvent ni lire ni modifier le contenu de cet environnement pendant son exécution. Dans le contexte de ce modèle, les opérations les plus sensibles s'y exécutent : la dérivation de clé, le déchiffrement du blob, la manipulation des données en session, le rechiffrement à la fermeture.
+Ce que le TEE garantit :
+Le code qui s'exécute dans l'enclave est exactement le code qui y a été chargé, et rien d'autre.
+Aucun processus extérieur — y compris root, l'OS, ou l'hyperviseur — ne peut inspecter ou modifier l'état interne de l'enclave pendant son exécution.
+La clé de déchiffrement utilisateur ne quitte jamais l'enclave.
+Ce que le TEE ne garantit pas seul :
+L'intégrité du code avant son chargement dans l'enclave — c'est là qu'intervient l'attestation.
+6.3 Couche 2 — L'attestation à distance
+L'attestation est le mécanisme par lequel un TEE prouve cryptographiquement à un vérificateur externe que le code qui s'exécute dans l'enclave est exactement le code attendu. Cette preuve est produite par le matériel lui-même, pas par l'opérateur.
+Au moment où le code est chargé dans l'enclave, le CPU calcule une empreinte (hash) de ce code et la signe avec une clé gravée en usine dans le processeur — une clé que l'opérateur ne connaît pas et ne peut pas forger. Cette signature, appelée quote d'attestation, peut être envoyée à n'importe quel vérificateur, qui vérifie : (1) que la signature provient d'un processeur authentique, et (2) que l'empreinte correspond au hash du code publié.
+Ce que l'attestation garantit :
+Correspondance cryptographique vérifiable entre le code publié et le code exécuté.
+Cette garantie est indépendante de la bonne foi de l'opérateur.
+Elle est vérifiable par l'utilisateur depuis l'extérieur, sans accès à l'infrastructure.
+Ce que l'attestation ne garantit pas seul :
+L'intégrité du matériel lui-même, si le CPU ou le firmware est compromis — c'est là qu'intervient le contrôle physique.
+6.4 Couche 3 — Le contrôle physique de l'infrastructure par l'organisation
+La chaîne de confiance de l'attestation peut être rompue au niveau du firmware ou par un accès physique à la machine. La réponse n'est pas cryptographique — elle est physique et organisationnelle :
+Des serveurs dédiés, non mutualisés. Un serveur partagé avec d'autres locataires expose l'infrastructure à un accès hyperviseur du fournisseur.
+Un accès physique contrôlé et audité. Les serveurs sont hébergés dans un espace dont l'accès est restreint aux membres de l'organisation, avec un journal d'accès physique public.
+Une chaîne d'approvisionnement vérifiée. Le matériel est acquis directement auprès de fabricants dont la chaîne de confiance est vérifiable. Les firmwares sont vérifiés avant installation.
+6.5 La garantie combinée
+| Ce qui est prouvé | Par quelle couche | Vérifiable comment |
+| Le code publié est le code qui s'exécute dans l'enclave | Attestation matérielle | Quote d'attestation vérifiable par l'utilisateur, indépendamment de l'opérateur |
+| L'enclave est protégée de l'OS, de l'hyperviseur et de l'opérateur lui-même | TEE | Propriété matérielle du CPU — vérifiable dans les spécifications du fabricant |
+| Le matériel n'a pas été altéré par un tiers avant ou pendant l'exécution | Contrôle physique | Journal d'accès physique public, politique d'approvisionnement documentée |
+| La clé de déchiffrement utilisateur ne quitte jamais l'enclave | TEE + architecture | Code du module de chiffrement, confirmé par l'attestation |
+| Ce qui tourne en production est cohérent avec les métriques observables | TEET | Télémétrie publique en temps réel |
+6.6 Les limites résiduelles honnêtes
+Les attaques de supply chain sur le CPU lui-même. La chaîne de confiance est ancrée dans une clé gravée en usine. Si le fabricant est compromis ou contraint par une juridiction, cette racine de confiance peut être corrompue. Ce risque est réel mais hors de portée de toute mitigation purement technique.
+Les attaques physiques sur la mémoire pendant une session active. Des techniques comme le cold boot attack peuvent en théorie permettre d'extraire des données de la RAM. Ces attaques requièrent un accès physique à la machine pendant une session active — ce que le contrôle physique documenté rend détectable.
+7. Pourquoi la centralisation est compatible avec ce modèle
+7.1 La question pertinente n'est pas « centralisé ou non ? »
+La réponse instinctive au problème de la confiance envers un opérateur central est la décentralisation. Cette réponse confond deux problèmes distincts. La décentralisation résout la dépendance à un opérateur unique. Elle ne résout pas la confidentialité — une donnée distribuée sur mille nœuds est toujours accessible à qui contrôle ces nœuds. La blockchain aggrave le cas : elle rend les données permanentes, publiquement accessibles et irrévocables.
+La question pertinente n'est pas « l'infrastructure est-elle centralisée ? » mais « qu'est-ce que l'opérateur possède ? ». La centralisation du calcul n'est pas le problème — c'est la centralisation de la possession qui l'est. Cette architecture centralise le calcul et distribue la possession à ses propriétaires légitimes : les utilisateurs.
+7.2 L'inventaire de l'infrastructure après session fermée
+| Composant | État entre les sessions | Exploitable ? |
+| Code applicatif | Public — dans le dépôt source | N'importe qui peut le lire. C'est l'objectif. |
+| Configuration d'infrastructure (IaC) | Publique — dans le dépôt infrastructure | N'importe qui peut la lire. C'est l'objectif. |
+| RAM | Effacée à la fermeture de chaque session | — |
+| Disque — données utilisateur | Vide | — |
+| Logs applicatifs | Non créés | — |
+| Identité des utilisateurs | Non créée | — |
+7.3 La frugalité comme preuve et source de résilience
+Il existe un indicateur indirect mais difficile à falsifier de la nature réelle d'un service : la structure de ses coûts d'infrastructure. Un service qui stocke, réplique, protège et audite des volumes importants de données personnelles a des coûts proportionnels. La frugalité d'une infrastructure Zéro-Data est visible — et difficile à simuler à la baisse.
+Mais la frugalité est plus qu'une preuve économique : c'est la source de la résilience. Un service traditionnel accumule de la complexité proportionnellement à ses données : plus il grandit, plus sa surface d'attaque s'étend, plus ses obligations de conformité augmentent. Sa croissance est aussi la croissance de sa vulnérabilité.
+Ce modèle ne devient pas plus fragile en grandissant. Il reste ce qu'il est : une infrastructure de computation sans mémoire.
+8. La gouvernance de l'opérateur — condition nécessaire, pas accessoire
+L'architecture technique peut être irréprochable. Si la structure juridique et économique de l'opérateur crée des incitations contraires, les garanties s'érodent dans le temps — non par malveillance, mais par logique.
+8.1 Le problème structurel du modèle capitaliste de croissance
+Un opérateur soumis à une obligation de croissance dispose d'un vecteur de monétisation naturel : la donnée utilisateur. L'accumulation de données, même initialement anonymes, crée de la valeur comportementale, analytique, publicitaire. Cette pression n'est pas une question d'intention des fondateurs — c'est une logique structurelle.
+Un service Zéro-Data n'a pas de données à monétiser. Son financement repose sur des associés, des fondateurs, des subventions publiques ou des dotations — des sources qui n'imposent ni croissance ni retour sur investissement. Son coût d'infrastructure est d'une frugalité radicale : servir des milliers d'utilisateurs simultanés ne représente qu'une fraction de ce que coûterait l'équivalent en infrastructure de stockage et d'analyse.
+La frugalité n'est pas une contrainte subie — c'est un avantage compétitif structurel. Un service qui n'accumule rien peut se permettre de prendre le temps qu'il faut. Un service qui accumule doit courir pour justifier ce qu'il accumule.
+8.2 Les structures compatibles
+Le service public opère sous mandat de mission, sans obligation de rentabilité actionnariale. Sa légitimité ne dépend pas de sa croissance mais de son utilité. Il est soumis à des contraintes de transparence et de contrôle démocratique qui renforcent les exigences de vérifiabilité de ce modèle.
+L'association ou la coopérative inscrit sa mission dans des statuts qui résistent aux changements de gouvernance. La licence open source garantit que la communauté peut reprendre le projet si l'organisation s'en écarte. L'absence d'actionnaires à satisfaire élimine la pression à la monétisation des données.
+8.3 Les conditions de gouvernance nécessaires
+| Condition | Nature | Vérifiable comment ? |
+| Absence d'obligation de croissance actionnariale | Juridique | Statuts de l'organisation — forme associative, publique, ou coopérative |
+| Mission inscrite dans les statuts et non modifiable sans consensus large | Juridique | Statuts publics — clause de mission, conditions de modification |
+| Licence open source permettant le fork communautaire | Organisationnelle | Licence du dépôt source — copyleft fort |
+| Modèle économique fondé sur le service, pas sur la donnée | Économique | Structure tarifaire publique — absence de publicité, de revente de données ou de monétisation comportementale |
+| Gouvernance transparente et auditée | Organisationnelle | Comptes annuels publiés, assemblées accessibles, rapports d'activité publics |
+| Base documentaire intégralement publique | Organisationnelle | Toute la documentation classifiée Externe par défaut : politiques, procédures, post-mortems, analyses de risque, décisions d'architecture |
+9. Domaines d'application
+Ce modèle s'applique à tout contexte où des données sensibles doivent être traitées par une infrastructure que leur propriétaire ne contrôle pas directement.
+| Domaine | Ce que l'architecture préserve | Ce que l'opérateur ne voit jamais |
+| Médical | Confidentialité patient, secret médical | Contenu des dossiers, identité du patient, fréquence de consultation, diagnostics |
+| Juridique | Secret professionnel de l'avocat | Contenu des consultations, identité des clients, avancement des procédures |
+| Industriel | Secret industriel, propriété intellectuelle | Formules, plans, données stratégiques |
+| Gouvernemental | Souveraineté numérique | Données sensibles indépendamment de la juridiction du fournisseur |
+| Financier personnel | Patrimoine, transactions, projections | Situation financière, revenus, dettes, actifs |
+10. Checklist des conditions nécessaires
+Ces conditions forment un système. En retirer une dégrade les garanties de l'ensemble. Cette section est conçue comme une liste de contrôle opérationnelle, résumant les propriétés développées dans les sections précédentes.
+10.1 Conditions architecturales et infrastructurelles
+| Condition | Nature | Vérifiable comment ? |
+| Données chiffrées côté client avant tout transit | Architecturale | Code du module de chiffrement — clé dérivée localement, chiffrement avant upload |
+| Computation en mémoire vive sans persistance | Architecturale | Code du service d'authentification + configuration IaC |
+| Swap désactivé à deux niveaux indépendants | Infrastructurelle | IaC + sorties système publiées à chaque release |
+| Zswap, zram, core dumps, crash dumps et hibernation désactivés | Infrastructurelle | Configuration IaC publiée, vérifiable à chaque release |
+| Clés appartenant à l'utilisateur, non détenues par l'opérateur | Architecturale | Architecture du module de chiffrement — aucune copie de clé côté serveur |
+| Aucun log associable à une session individuelle | Applicative | Configuration reverse proxy dans l'IaC |
+| Aucune identité utilisateur créée | Architecturale | Absence de modèle utilisateur dans le code |
+10.2 Conditions de vérifiabilité
+| Condition | Nature | Vérifiable comment ? |
+| Code source publié et auditable | Organisationnelle | Dépôt source public |
+| IaC publique — seul chemin vers la production via CI/CD | Organisationnelle | Pipelines CI/CD publics + historique des déploiements |
+| Analyses de sécurité automatisées publiées | Organisationnelle | Dépôt CI public |
+| Télémétrie d'exécution exposée publiquement (TEET) | Organisationnelle | Interface de métriques temps réel accessible sans authentification |
+| TEE + attestation à distance opérationnels | Cryptographique | Quote d'attestation vérifiable par l'utilisateur, indépendamment de l'opérateur |
+| Contrôle physique documenté des serveurs | Physique | Journal d'accès physique public, politique d'approvisionnement documentée |
+10.3 Conditions de gouvernance
+| Condition | Nature | Vérifiable comment ? |
+| Absence d'obligation de croissance actionnariale | Juridique | Statuts de l'organisation — forme associative, publique, ou coopérative |
+| Mission inscrite dans les statuts et non modifiable sans consensus large | Juridique | Statuts publics — clause de mission, conditions de modification |
+| Licence open source permettant le fork communautaire | Organisationnelle | Licence du dépôt source — copyleft fort |
+| Modèle économique fondé sur le service, pas sur la donnée | Économique | Structure tarifaire publique — absence de publicité, de revente de données ou de monétisation comportementale |
+| Gouvernance transparente et auditée | Organisationnelle | Comptes annuels publiés, assemblées accessibles, rapports d'activité publics |
+| Base documentaire intégralement publique | Organisationnelle | Toute la documentation classifiée Externe par défaut : politiques, procédures, post-mortems, analyses de risque, décisions d'architecture |
+11. Limites honnêtes du modèle
+Ces limites sont documentées parce qu'un modèle de confiance crédible exige une honnêteté totale sur ce qu'il ne garantit pas. Un lecteur qui découvre une limite non documentée a toutes les raisons de douter des garanties documentées.
+| Limite | Nature | Impact réel | Mitigation disponible | Ce que la mitigation ne couvre pas |
+| Gap d'attestation résiduel | Cryptographique résiduelle | Faible dans le modèle complet avec TEE + attestation + contrôle physique | TEE + attestation à distance + contrôle physique + TEET | Compromission du fabricant de CPU ou contrainte étatique. Cold boot pendant session active. |
+| Sécurité du terminal | Hors périmètre — côté utilisateur | Élevé : une donnée compromise avant chiffrement l'est indépendamment du serveur | Recommandations d'hygiène utilisateur | Un terminal compromis au niveau kernel ou firmware |
+| Session laissée ouverte | Comportementale — côté utilisateur | Modéré : fenêtre bornée à la durée de la session | Timeout de session automatique configurable | Session longue sur terminal partagé ou volé |
+| Vecteurs mémoire résiduels | Infrastructurelle | Modéré : zswap, zram, core dumps, crash dumps, hibernation | Désactivation explicite de chaque vecteur dans l'IaC | La configuration peut évoluer silencieusement sans attestation |
+| Accès hyperviseur | Infrastructurelle — cloud mutualisé | Réel mais ciblé | Infrastructure bare metal dédiée élimine ce vecteur | Un fournisseur bare metal avec accès physique peut accéder à la RAM en session |
+| Dérive de l'opérateur | Organisationnelle — long terme | Réel : pression réglementaire, changement de gouvernance | Licence open source, gouvernance associative ou publique, IaC publique | Modification progressive délibérément opaque non reflétée dans l'IaC |
+| Perte du blob ou du mot de passe | Utilisabilité — inhérente au modèle | Irrémédiable par construction | Sauvegarde du blob sur deux supports distincts. Gestionnaire de mots de passe. | Un utilisateur qui perd les deux perd définitivement ses données |
+La dernière limite mérite une attention particulière. L'absence de mécanisme de récupération n'est pas une limitation technique non résolue — c'est une conséquence directe et délibérée du modèle. Tout mécanisme de récupération implique un tiers capable d'aider l'utilisateur, c'est-à-dire un tiers qui connaît quelque chose sur lui. Un système qui affirme ne rien savoir de l'utilisateur mais qui peut envoyer un email de récupération se contredit structurellement. La cohérence du modèle est un actif de confiance — une exception l'érode bien au-delà de la fonctionnalité elle-même.
+12. Conclusion
+Ce document a décrit les défis techniques qu'une architecture Zéro-Data doit résoudre, les propriétés qu'elle doit garantir, et les conditions organisationnelles et de gouvernance qui leur donnent de la durée.
+L'architecture ne résout pas le problème de la confidentialité en faisant mieux que ses prédécesseurs à leur propre jeu. Elle change le jeu. Là où les services traditionnels s'engagent à protéger ce qu'ils possèdent, ce modèle supprime la possession elle-même. Là où l'utilisateur doit faire confiance à un opérateur pour garder ses secrets, il n'a ici à faire confiance qu'à du code lisible et à de l'architecture vérifiable.
+L'opérateur ne peut pas divulguer ce qu'il n'a jamais eu. Il ne peut pas identifier quelqu'un qu'il n'a jamais connu.
+Ce changement de paradigme a des implications concrètes pour les secteurs où la confidentialité est une condition d'exercice — médecine, droit, finance, industrie, État. Dans ces contextes, la question n'a jamais été de savoir si les données pouvaient être chiffrées. La question a toujours été de savoir à qui on pouvait confier la clé. Ce modèle retire la question.
+Deux vecteurs de fragilité résiduels méritent d'être nommés en conclusion, précisément parce qu'ils ne sont pas techniques. Le premier est la dérive de l'opérateur : une architecture irréprochable sous une gouvernance défaillante ne tient pas dans le temps. C'est pourquoi les conditions de gouvernance — structure juridique, mission inscrite dans les statuts, licence open source, modèle économique sans dépendance à la donnée — ne sont pas des compléments au modèle technique. Elles en sont partie intégrante. Le second est la sécurité du terminal utilisateur : l'architecture protège le chemin de la donnée de l'utilisateur à l'infrastructure et retour. Elle ne peut rien sur ce qui se passe avant et après.
+Ces limites ne fragilisent pas le modèle — elles le délimitent. Un modèle qui connaît ses limites est plus robuste qu'un modèle qui prétend ne pas en avoir.
+
+La question qui se pose aux décideurs n'est pas « est-ce que ce modèle est possible ? »
+Il est implémenté. La question est : dans quels autres contextes devrait-il être la norme ?
+
+Document public — Version 4.0 — Mars 2026
+Toutes les révisions sont conservées et accessibles.
+Ce document est indépendant de toute implémentation spécifique.
