@@ -6,6 +6,9 @@
     "external_directory": "deny",
     "webfetch": "ask",
     "websearch": "ask",
+    "lsp": {
+      "*": "allow"
+    },
     "bash": {
       "*": "ask",
       "git status*": "allow",
