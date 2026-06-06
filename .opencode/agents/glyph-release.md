@@ -12,6 +12,7 @@ permission:
     "*": ask
     "git diff*": allow
     "git status*": allow
+    "git push*": allow
     "wc *": allow
     "grep *": allow
     "rg *": allow

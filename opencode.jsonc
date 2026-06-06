@@ -1,0 +1,66 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "permission": {
+    "*": "ask",
+    "external_directory": "deny",
+    "webfetch": "ask",
+    "websearch": "ask",
+    "bash": {
+      "*": "ask",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "grep *": "allow",
+      "rg *": "allow",
+      "find *": "allow",
+      "ls *": "allow",
+      "cargo test*": "allow",
+      "cargo fmt*": "allow",
+      "cargo clippy*": "allow",
+      "go test*": "allow",
+      "npm test*": "allow",
+      "npm run test*": "allow",
+      "npm run lint*": "allow",
+      "rm -rf *": "deny",
+      "git push*": "deny",
+      "ssh *": "deny",
+      "scp *": "deny",
+      "terraform apply*": "deny",
+      "ansible-playbook *production*": "deny"
+    }
+  },
+
+  "agent": {
+    "glyph-orchestrator": {
+      "description": "Pilote le cycle Agile Glyph et orchestre DPO, CISO, DevSecOps, QA et Release.",
+      "mode": "primary",
+      "temperature": 0.1,
+      "steps": 40,
+      "permission": {
+        "edit": {
+          "*": "deny",
+          "docs/implementation/**": "allow"
+        },
+        "bash": {
+          "*": "ask",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "grep *": "allow",
+          "rg *": "allow",
+          "find *": "allow",
+          "ls *": "allow"
+        },
+        "task": {
+          "*": "deny",
+          "glyph-dpo": "allow",
+          "glyph-ciso": "allow",
+          "glyph-devsecops": "allow",
+          "glyph-qa": "allow",
+          "glyph-release": "allow"
+        }
+      }
+    }
+  }
+}
