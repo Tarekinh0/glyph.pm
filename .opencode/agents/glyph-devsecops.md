@@ -4,6 +4,8 @@ mode: subagent
 temperature: 0.2
 steps: 50
 permission:
+  lsp:
+    "*": allow
   edit:
     "*": deny
     "src/**": allow
