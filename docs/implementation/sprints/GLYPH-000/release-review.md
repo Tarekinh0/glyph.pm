@@ -8,5 +8,5 @@
 - [x] **Vérification SBOM, signature, provenance** : N/A. Aucun artefact binaire n'est généré par cette story.
 - [x] **Sécurité de la supply chain interne (Permissions des agents)** : Validée. Les permissions définies dans les fichiers `.opencode/agents/*.md` respectent le principe de moindre privilège :
   - Les agents de revue (`glyph-ciso`, `glyph-dpo`, `glyph-qa`, `glyph-release`) ont l'interdiction stricte de modifier le code (`edit: "*": deny`), limitant leur surface d'écriture au dossier `docs/implementation/`.
-  - L'agent d'implémentation (`glyph-devsecops`) a l'interdiction explicite de modifier les documents fondateurs (`Documentation/Architecture-Decision-Records.md` et `Documentation/Zero_Data_Architecture.md`), ce qui garantit l'intégrité des règles d'architecture.
+  - L'agent d'implémentation (`glyph-devsecops`) a l'interdiction explicite de modifier les documents fondateurs (`docs/decisions/README.md` et `Documentation/Zero_Data_Architecture.md`), ce qui garantit l'intégrité des règles d'architecture.
   - Les commandes bash destructrices ou d'exfiltration (`rm -rf`, `git push`, `ssh`) sont bloquées pour le DevSecOps.

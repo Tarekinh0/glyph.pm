@@ -3,7 +3,7 @@
 Glyph is a zero-data / zero-knowledge personal finance infrastructure.
 
 Non-negotiable rules:
-- Do not weaken Documentation/Architecture-Decision-Records.md or Documentation/Zero_Data_Architecture.md.
+- Do not weaken the Architecture Decision Records in the `docs/decisions/` folder or `Documentation/Zero_Data_Architecture.md`.
 - Do not introduce user accounts, email recovery, persistent user identifiers, analytics, tracking, access logs, or bank aggregation tokens.
 - User financial data must not be persisted server-side.
 - Decrypted `.grist` files and imported financial files must only exist in memory-backed storage.
@@ -21,24 +21,41 @@ ADR anchors:
 
 Never commit secrets, production credentials, private keys, user data, real bank statements, or real transaction samples.
 
+## Glyph Backlog Governance
+
+Before taking any action, all agents MUST read the canonical backlog and roadmap to understand the current context and priorities. The source of truth is located at:
+- `docs/implementation/backlog/glyph-v1-backlog.yaml`
+- `docs/implementation/backlog/glyph-v1-roadmap.md`
+
 ## Multi-Agent Governance
 
 Glyph uses a strict multi-agent governance model to ensure security, privacy, and quality.
 
 ### Agents
-- **glyph-orchestrator**: Primary agent. Manages the sprint lifecycle, creates stories, and coordinates other agents.
+- **glyph-orchestrator**: Primary agent and arbiter. Manages the sprint lifecycle, creates stories, coordinates other agents, and resolves conflicts or rejections.
 - **glyph-dpo**: Reviewer. Ensures GDPR compliance, privacy by design, and zero-data principles. Cannot modify code.
 - **glyph-ciso**: Reviewer. Ensures security, threat modeling, and compliance with ADRs. Cannot modify code.
 - **glyph-devsecops**: Implementer. Writes code, tests, and CI/CD workflows. Cannot modify ADRs.
 - **glyph-qa**: Reviewer. Verifies tests, edge cases, and quality. Cannot modify code.
 - **glyph-release**: Reviewer. Verifies CI/CD, SBOM, and supply chain security. Cannot modify code.
 
-### Workflow
-1. **Sprint Initialization**: `glyph-orchestrator` creates a story in `docs/implementation/sprints/GLYPH-XXXX/story.md`.
-2. **Design Review**: `glyph-dpo` and `glyph-ciso` review the story. If blocked, the sprint stops.
-3. **Implementation**: `glyph-devsecops` implements the story.
-4. **Code Review**: `glyph-ciso`, `glyph-dpo`, `glyph-qa`, and `glyph-release` review the implementation.
-5. **Closure**: `glyph-orchestrator` produces `closure.md` with the final verdict.
+### Strict Sequential Workflow
+
+The workflow is strictly sequential and file-based within the sprint folder (`docs/implementation/sprints/GLYPH-XXXX/`):
+
+1. **Sprint Initialization**: `glyph-orchestrator` creates the sprint folder and writes `story.md`.
+2. **Design**:
+   - `glyph-dpo` writes `dpo-requirements.md`.
+   - `glyph-ciso` writes `ciso-requirements.md`.
+   - *If blocked, the sprint stops and `glyph-orchestrator` arbitrates.*
+3. **Implementation**: `glyph-devsecops` implements the story (code, tests) and writes `dev-notes.md` (factual, technical).
+4. **Review**:
+   - `glyph-ciso` verifies the implementation and writes `ciso-review.md`.
+   - `glyph-dpo` verifies the implementation and writes `dpo-review.md`.
+5. **Validation**:
+   - `glyph-qa` verifies tests and edge cases, then writes `qa-review.md`.
+   - `glyph-release` verifies CI/CD and supply chain, then writes `release-review.md`.
+6. **Closure**: `glyph-orchestrator` reviews all artifacts, resolves any remaining conflicts, and produces `closure.md` with the final verdict.
 
 ### Commands
 - `/glyph-sprint`: Starts a full sprint cycle.
