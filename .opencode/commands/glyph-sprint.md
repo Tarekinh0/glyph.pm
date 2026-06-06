@@ -38,6 +38,7 @@ Tu dois piloter le cycle suivant:
 11. Si DPO échoue, renvoyer au DevSecOps, maximum 2 boucles.
 12. Appeler glyph-qa.
 13. Appeler glyph-release si CI/CD, dépendances, build, SBOM ou release sont touchés.
-14. Produire closure.md avec PASS ou FAIL.
+14. Sauvegarder les rapports complets des agents dans des fichiers (ciso-review.md, dpo-review.md, qa-review.md, release-review.md) dans le dossier du sprint.
+15. Produire closure.md avec PASS ou FAIL.
 
 Ne modifie jamais les ADR pour faire passer une story.
