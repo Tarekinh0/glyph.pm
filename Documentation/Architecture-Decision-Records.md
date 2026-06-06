@@ -1,3 +1,5 @@
+# OBSOLÈTE : Ce fichier a été éclaté. Veuillez consulter docs/decisions/README.md
+
 # Architecture Decision Records (ADR)
 
 \---

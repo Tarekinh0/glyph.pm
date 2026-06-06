@@ -326,7 +326,7 @@ Un service Zéro-Data n'a pas de données à monétiser. Son financement repose 
 | Licence open source permettant le fork communautaire | Organisationnelle | Licence du dépôt source — copyleft fort |
 | Modèle économique fondé sur le service, pas sur la donnée | Économique | Structure tarifaire publique — absence de publicité, de revente de données ou de monétisation comportementale |
 | Gouvernance transparente et auditée | Organisationnelle | Comptes annuels publiés, assemblées accessibles, rapports d'activité publics |
-| Base documentaire intégralement publique | Organisationnelle | Toute la documentation classifiée Externe par défaut : politiques, procédures, post-mortems, analyses de risque, décisions d'architecture |
+| Base documentaire intégralement publique | Organisationnelle | Toute la documentation classifiée Externe par défaut : politiques, procédures, post-mortems, analyses de risque, [décisions d'architecture](../docs/decisions/README.md) |
 
 ---
 
@@ -380,7 +380,7 @@ Ces conditions forment un système. En retirer une dégrade les garanties de l'e
 | Licence open source permettant le fork communautaire | Organisationnelle | Licence du dépôt source — copyleft fort |
 | Modèle économique fondé sur le service, pas sur la donnée | Économique | Structure tarifaire publique — absence de publicité, de revente de données ou de monétisation comportementale |
 | Gouvernance transparente et auditée | Organisationnelle | Comptes annuels publiés, assemblées accessibles, rapports d'activité publics |
-| Base documentaire intégralement publique | Organisationnelle | Toute la documentation classifiée Externe par défaut : politiques, procédures, post-mortems, analyses de risque, décisions d'architecture |
+| Base documentaire intégralement publique | Organisationnelle | Toute la documentation classifiée Externe par défaut : politiques, procédures, post-mortems, analyses de risque, [décisions d'architecture](../docs/decisions/README.md) |
 
 ---
 

@@ -49,7 +49,7 @@ Et parce que Glyph ne coûte presque rien à faire tourner, il ne peut pas faire
 Un système qui ne stocke rien n'a rien à perdre. Un système qui n'a rien à perdre n'a aucune raison de compromettre.
 Nous publions notre code source. Intégralement.
 Nous publions notre architecture de sécurité. Intégralement.
-Nous publions nos analyses de risques, nos politiques de sécurité, nos procédures opérationnelles. Intégralement.
+Nous publions nos analyses de risques, nos politiques de sécurité, nos procédures opérationnelles, et nos [décisions d'architecture (ADR)](docs/decisions/README.md). Intégralement.
 Nous publions nos incidents de sécurité une fois résolus — avec la chronologie complète, la cause racine, les mesures correctives. Pas de communication de crise savamment dosée. Les faits bruts.
 Nous publions nos comptes. Ce que nous recevons en dons, ce que nous recevons en subventions, ce que nous dépensons et pourquoi.
 Les seuls secrets que nous gardons sont ceux qui protègent votre sécurité — les clés cryptographiques, les certificats, les vulnérabilités en cours de traitement.
