@@ -11,7 +11,7 @@ permission:
     "services/**": allow
     "apps/**": allow
     "tests/**": allow
-    ".github/workflows/**": allow
+    ".github/workflows/**": ask
     "infrastructure/**": ask
     "docs/implementation/**": allow
     "Documentation/Architecture-Decision-Records.md": deny
