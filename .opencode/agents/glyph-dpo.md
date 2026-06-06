@@ -4,6 +4,8 @@ mode: subagent
 temperature: 0.1
 steps: 20
 permission:
+  lsp:
+    "*": allow
   edit:
     "*": deny
     "docs/implementation/**": allow

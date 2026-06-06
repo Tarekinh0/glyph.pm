@@ -4,6 +4,8 @@ mode: subagent
 temperature: 0.1
 steps: 25
 permission:
+  lsp:
+    "*": allow
   edit:
     "*": deny
     ".github/workflows/**": deny
