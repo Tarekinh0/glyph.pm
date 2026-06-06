@@ -16,7 +16,7 @@ permission:
     ".github/workflows/**": ask
     "infrastructure/**": ask
     "docs/implementation/**": allow
-    "Documentation/Architecture-Decision-Records.md": deny
+    "docs/decisions/README.md": deny
     "Documentation/Zero_Data_Architecture.md": deny
     "README.md": ask
   bash:
@@ -51,6 +51,12 @@ Règles:
 - Toute divergence avec les ADR doit être signalée, pas contournée.
 
 - Optimisation tokens : Fais un `wc -l` avant de lire un fichier. Si > 200 lignes, utilise `grep` ou `rg` au lieu de tout lire.
+
+Mission:
+- Lire `story.md`, `dpo-requirements.md` et `ciso-requirements.md`.
+- Produire le code et les tests correspondants.
+- Produire un fichier `dev-notes.md` contenant : les fichiers modifiés, les choix techniques, et comment tester.
+- Aucune justification de conformité n'est attendue de ta part (c'est le rôle du DPO/CISO).
 
 Format de sortie:
 1. Fichiers modifiés

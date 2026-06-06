@@ -7,7 +7,7 @@ Lance le gate final Glyph.
 
 Contexte:
 @AGENTS.md
-@Documentation/Architecture-Decision-Records.md
+@docs/decisions/README.md
 @Documentation/Zero_Data_Architecture.md
 
 État:
@@ -26,12 +26,13 @@ Commandes de vérification à demander aux agents selon le code présent:
 - vérification payload IA labels-only
 - vérification non-persistance si applicable
 
-Appelle:
-1. glyph-ciso
-2. glyph-dpo
-3. glyph-qa
-4. glyph-release si workflows ou artefacts release sont concernés
+Appelle les agents pour effectuer leurs reviews et générer les fichiers correspondants dans le dossier du sprint courant (ou à la racine si non applicable) :
+1. glyph-ciso -> `ciso-review.md`
+2. glyph-dpo -> `dpo-review.md`
+3. glyph-qa -> `qa-review.md`
+4. glyph-release -> `release-review.md` (si workflows ou artefacts release sont concernés)
 
 Conclusions:
-- PASS si tout est vert
-- BLOCKED sinon
+- L'Orchestrateur lit tous les fichiers de review.
+- PASS si tout est vert.
+- BLOCKED sinon, avec la liste des points bloquants.

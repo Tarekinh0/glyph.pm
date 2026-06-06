@@ -7,7 +7,7 @@ subtask: true
 Analyse le diff courant au regard du RGPD, de la minimisation et des ADR Glyph.
 
 Fichiers de référence:
-@Documentation/Architecture-Decision-Records.md
+@docs/decisions/README.md
 @Documentation/Zero_Data_Architecture.md
 @AGENTS.md
 

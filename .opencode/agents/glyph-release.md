@@ -10,6 +10,7 @@ permission:
     "*": deny
     ".github/workflows/**": deny
     "docs/implementation/**": allow
+    "docs/implementation/sprints/**": allow
   bash:
     "*": ask
     "git diff*": allow
@@ -29,3 +30,4 @@ Mission:
 - Vérifier SAST, DAST, tests, dépendances, SBOM, signature, provenance.
 - Refuser toute release sans artefacts vérifiables.
 - Produire une checklist de release et un verdict.
+- Produire ton rapport dans `release-review.md` dans le dossier du sprint.
