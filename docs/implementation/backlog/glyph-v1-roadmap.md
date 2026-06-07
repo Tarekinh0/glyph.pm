@@ -54,7 +54,6 @@ Roadmap **bottom-up**: on verrouille d'abord les garanties structurelles (zero-d
 ## Items WAITING_INPUT (à date)
 
 - GLYPH-006 (version pin Grist).
-- GLYPH-011 (language split backend).
 - GLYPH-015 (référence modèle IA).
 - GLYPH-016 (jeu de regex sanitization IA).
 - GLYPH-020 (approbateur humain prod apply).

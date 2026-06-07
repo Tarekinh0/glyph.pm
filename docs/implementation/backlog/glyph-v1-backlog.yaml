@@ -144,7 +144,7 @@ human_input_registry:
   network.failover_policy: PROVIDED
   grist.version_pin: TODO
   grist.plugin_policy: TODO
-  backend.language_split: TODO
+  backend.language_split: PROVIDED
   backend.error_redaction_policy: PROVIDED
   ai.provider_region: PROVIDED
   ai.model_reference: TODO
@@ -232,7 +232,7 @@ items:
 
   - id: GLYPH-003
     title: "RAM-only /dev/shm pour données déchiffrées"
-    status: WAITING_INPUT
+    status: READY
     adr_ref: [ADR-003, ADR-001]
     domains: [memory, infrastructure, privacy]
     dependencies: [GLYPH-001]
@@ -323,7 +323,7 @@ items:
 
   - id: GLYPH-008
     title: "Chiffrement AES-256-GCM constants"
-    status: WAITING_INPUT
+    status: READY
     adr_ref: [ADR-008, ADR-001]
     domains: [crypto, security]
     dependencies: [GLYPH-001]
@@ -343,7 +343,7 @@ items:
 
   - id: GLYPH-009
     title: "KDF Argon2id constants"
-    status: WAITING_INPUT
+    status: READY
     adr_ref: [ADR-009, ADR-001]
     domains: [crypto, security]
     dependencies: [GLYPH-001]
@@ -363,7 +363,7 @@ items:
 
   - id: GLYPH-010
     title: "Absence de récupération de mot de passe"
-    status: WAITING_INPUT
+    status: READY
     adr_ref: [ADR-010, ADR-001]
     domains: [privacy, identity]
     dependencies: [GLYPH-001]
@@ -381,7 +381,7 @@ items:
 
   - id: GLYPH-011
     title: "Parsing import robuste + hygiene"
-    status: WAITING_INPUT
+    status: READY
     adr_ref: [ADR-007, ADR-016, ADR-001]
     domains: [parsing_import, privacy, security]
     dependencies: [GLYPH-002]
@@ -401,7 +401,7 @@ items:
 
   - id: GLYPH-012
     title: "Durées de session, timeout, rotation token"
-    status: WAITING_INPUT
+    status: READY
     adr_ref: [ADR-019, ADR-001]
     domains: [auth_session, security, privacy]
     dependencies: [GLYPH-002]
@@ -510,7 +510,7 @@ items:
 
   - id: GLYPH-018
     title: "Forgejo source de vérité + miroir CI"
-    status: WAITING_INPUT
+    status: READY
     adr_ref: [ADR-020, ADR-031]
     domains: [ci_cd, governance]
     dependencies: [GLYPH-001]
