@@ -14,4 +14,4 @@ PASS
 - Création des commandes dans `.opencode/commands/`.
 - Création des templates dans `docs/implementation/templates/`.
 - Mise à jour de `AGENTS.md`.
-- Déplacement des ADRs dans `Documentation/`.
+- Déplacement des ADRs dans `docs/decisions/`.

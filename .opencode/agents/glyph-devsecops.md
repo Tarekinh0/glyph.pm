@@ -17,7 +17,7 @@ permission:
     "infrastructure/**": ask
     "docs/implementation/**": allow
     "docs/decisions/README.md": deny
-    "Documentation/Zero_Data_Architecture.md": deny
+    "docs/Zero_Data_Architecture.md": deny
     "README.md": ask
   bash:
     "*": ask

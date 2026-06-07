@@ -8,7 +8,7 @@ Analyse le diff courant au regard des ADR Glyph.
 
 Fichiers de référence:
 @docs/decisions/README.md
-@Documentation/Zero_Data_Architecture.md
+@docs/Zero_Data_Architecture.md
 @AGENTS.md
 
 Diff:

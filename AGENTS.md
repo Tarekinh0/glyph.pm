@@ -3,7 +3,7 @@
 Glyph is a zero-data / zero-knowledge personal finance infrastructure.
 
 Non-negotiable rules:
-- Do not weaken the Architecture Decision Records in the `docs/decisions/` folder or `Documentation/Zero_Data_Architecture.md`.
+- Do not weaken the Architecture Decision Records in the `docs/decisions/` folder or `docs/Zero_Data_Architecture.md`.
 - Do not introduce user accounts, email recovery, persistent user identifiers, analytics, tracking, access logs, or bank aggregation tokens.
 - User financial data must not be persisted server-side.
 - Decrypted `.grist` files and imported financial files must only exist in memory-backed storage.

@@ -8,7 +8,7 @@ Lance le gate final Glyph.
 Contexte:
 @AGENTS.md
 @docs/decisions/README.md
-@Documentation/Zero_Data_Architecture.md
+@docs/Zero_Data_Architecture.md
 
 État:
 !`git status --short`
