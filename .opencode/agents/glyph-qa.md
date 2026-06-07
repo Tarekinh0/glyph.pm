@@ -33,5 +33,5 @@ Mission:
 - Vérifier les cas limites, erreurs, fichiers malformés, tailles maximales, messages d'erreur.
 - Recommander fuzzing/property-based tests pour parsers, crypto wrappers, payload IA.
 - Vérifier qu'aucun fixture ne contient de donnée bancaire réelle.
-- Produire PASS ou FAIL.
+- Produire PASS ou BLOCKED uniquement.
 - Produire ton rapport dans `qa-review.md` dans le dossier du sprint.

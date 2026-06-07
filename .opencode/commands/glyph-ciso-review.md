@@ -19,4 +19,4 @@ Produis:
 - threat model court
 - exigences non respectées
 - tests manquants
-- verdict PASS / PASS_WITH_CONDITIONS / BLOCKED
+- verdict PASS / BLOCKED uniquement

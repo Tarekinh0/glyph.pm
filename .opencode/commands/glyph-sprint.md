@@ -39,6 +39,6 @@ Tu dois piloter le cycle suivant:
 11. Si DPO échoue, renvoyer au DevSecOps, maximum 2 boucles.
 12. Appeler glyph-qa pour validation et rédaction de `qa-review.md`.
 13. Appeler glyph-release si CI/CD, dépendances, build, SBOM ou release sont touchés, pour rédaction de `release-review.md`.
-14. Produire `closure.md` avec PASS ou FAIL.
+14. Produire `closure.md` avec PASS ou BLOCKED.
 
 Ne modifie jamais les ADR pour faire passer une story.

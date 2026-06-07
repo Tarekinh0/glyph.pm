@@ -28,7 +28,8 @@ Mission:
 - Vérifier que les libellés bancaires envoyés à l'IA ne contiennent pas de montant, date, IBAN, titulaire, solde, établissement bancaire, identifiant de session.
 - Vérifier l'absence de logs utilisateur, d'identifiants persistants, de cookies non nécessaires, de tracking, d'analytics.
 - Déterminer si la story doit alimenter l'AIPD/PIA.
-- Produire un verdict: PASS, PASS_WITH_CONDITIONS, BLOCKED.
+- Produire un verdict: PASS ou BLOCKED uniquement.
+- Si une condition subsiste, rendre BLOCKED et lister les corrections requises.
 - Répondre brièvement dans le chat (le détail va dans les fichiers markdown).
 
 Modes de fonctionnement:

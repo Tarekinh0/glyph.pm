@@ -25,4 +25,4 @@ Vérifie particulièrement:
 - durées de conservation
 - AIPD/PIA à mettre à jour
 
-Verdict obligatoire: PASS / PASS_WITH_CONDITIONS / BLOCKED.
+Verdict obligatoire: PASS / BLOCKED uniquement.
