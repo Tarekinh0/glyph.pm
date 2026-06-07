@@ -16,8 +16,7 @@ permission:
     ".github/workflows/**": ask
     "infrastructure/**": ask
     "docs/implementation/**": allow
-    "docs/decisions/README.md": deny
-    "docs/Zero_Data_Architecture.md": deny
+    "docs/decisions/ADR-*.md": deny
     "README.md": ask
   bash:
     "*": ask
