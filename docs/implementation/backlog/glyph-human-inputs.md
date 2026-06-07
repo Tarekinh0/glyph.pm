@@ -15,7 +15,7 @@ Statuts autorisés: `TODO`, `PROVIDED`, `NOT_NEEDED`, `DECISION_REQUIRED`.
 | `network.failover_policy` | network | Politique failover | PROVIDED | Trigger heartbeat > 90s | ADR-012/030 | GLYPH-014/030 |
 | `grist.version_pin` | grist | Version Grist cible V1 | TODO | Pinning à définir dans IaC | N/A | GLYPH-006 |
 | `grist.plugin_policy` | grist | Politique widgets/plugins autorisés | TODO | Liste blanche à définir | N/A | GLYPH-006 |
-| `backend.language_split` | backend | Répartition Rust/Go et ownership | TODO | Décision technique à formaliser | N/A | GLYPH-011 |
+| `backend.language_split` | backend | Répartition Rust/Go et ownership | PROVIDED | 100% Rust (Axum) | Décision Architecte | GLYPH-011 |
 | `backend.error_redaction_policy` | backend | Politique anti-fuite dans erreurs | PROVIDED | Interdiction brute finance dans erreurs | Règles DevSecOps | GLYPH-002/011 |
 | `ai.provider_region` | AI | Région d'hébergement IA | PROVIDED | France | README | GLYPH-007 |
 | `ai.model_reference` | AI | Référence modèle IA versionnée | TODO | À figer avant GLYPH-015 | N/A | GLYPH-015 |

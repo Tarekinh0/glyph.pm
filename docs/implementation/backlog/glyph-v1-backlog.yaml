@@ -206,7 +206,7 @@ items:
 
   - id: GLYPH-002
     title: "Contrôles négatifs zero-data (anti-régression)"
-    status: READY
+    status: DONE
     adr_ref: [ADR-001, ADR-021]
     domains: [privacy, identity, logs, parsing_import]
     dependencies: [GLYPH-001]
@@ -217,10 +217,18 @@ items:
       - "Tests négatifs: account/recovery/tracking/analytics/persistent IDs/access logs/bank tokens"
       - "Rapport de non-régression privacy"
       - "Aucun message d'erreur avec données financières brutes"
-    evidence: []
+    evidence:
+      - docs/implementation/sprints/GLYPH-002/story.md
+      - docs/implementation/sprints/GLYPH-002/dpo-requirements.md
+      - docs/implementation/sprints/GLYPH-002/ciso-requirements.md
+      - docs/implementation/sprints/GLYPH-002/dpo-review.md
+      - docs/implementation/sprints/GLYPH-002/ciso-review.md
+      - docs/implementation/sprints/GLYPH-002/qa-review.md
+      - docs/implementation/sprints/GLYPH-002/dev-notes.md
+      - docs/implementation/sprints/GLYPH-002/closure.md
     notes: "Point d'entrée de la protection documentaire et testable des invariants zero-data."
     blocked_reason: null
-    last_sprint_folder: null
+    last_sprint_folder: docs/implementation/sprints/GLYPH-002
 
   - id: GLYPH-003
     title: "RAM-only /dev/shm pour données déchiffrées"

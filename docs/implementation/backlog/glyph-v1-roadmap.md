@@ -18,7 +18,7 @@ Roadmap **bottom-up**: on verrouille d'abord les garanties structurelles (zero-d
 
 ### Phase 0 — Gouvernance
 - GLYPH-000 (DONE)
-- GLYPH-001 (IN_PROGRESS)
+- GLYPH-001 (DONE)
 
 ### Phase 1 — Invariants sécurité/vie privée
 - GLYPH-002 → GLYPH-012
