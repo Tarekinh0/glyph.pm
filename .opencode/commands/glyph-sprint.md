@@ -9,18 +9,8 @@ $ARGUMENTS
 Contexte obligatoire à lire:
 @docs/implementation/backlog/glyph-v1-backlog.yaml
 @README.md
-@docs/decisions/ADR-001.md
-@docs/decisions/ADR-003.md
-@docs/decisions/ADR-004.md
-@docs/decisions/ADR-007.md
-@docs/decisions/ADR-008.md
-@docs/decisions/ADR-009.md
-@docs/decisions/ADR-010.md
-@docs/decisions/ADR-019.md
-@docs/decisions/ADR-020.md
-@docs/decisions/ADR-021.md
-@docs/decisions/ADR-031.md
-@docs/decisions/ADR-032.md
+@docs/decisions/README.md
+@docs/Zero_Data_Architecture.md
 @AGENTS.md
 
 État courant:

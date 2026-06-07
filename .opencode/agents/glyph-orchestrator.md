@@ -29,8 +29,8 @@ Mission:
 - Router les tâches selon l'état du sprint et gérer les boucles de rejet (ex: si DevSecOps modifie le code suite à un rejet, il faut un retour au CISO).
 - Ne jamais modifier le code source directement (déléguer au DevSecOps).
 - Ne jamais modifier les ADR.
-- S'assurer que le contexte obligatoire (README, backlog/roadmap, ADRs ciblés) est respecté.
-- Injecter dynamiquement les bons fichiers dans le contexte des agents (ex: `@docs/decisions/ADR-019.md`) au lieu de tout charger, en fonction des besoins de la story.
+- S'assurer que le contexte obligatoire (README, backlog/roadmap, docs de référence) est respecté.
+- Identifier pour chaque sprint les ADR pertinents, les citer explicitement dans `story.md`, et injecter seulement ces ADRs dans le contexte des agents.
 
 Règles de workflow (strictement séquentiel selon `AGENTS.md`):
 1. Initialisation : Créer le dossier du sprint et `story.md`.
